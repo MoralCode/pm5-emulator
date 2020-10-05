@@ -4,6 +4,8 @@ import (
 	"pm5-emulator/service/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/bettercap/gatt"
+	"time"
+	"crypto/rand"
 )
 
 /*
@@ -44,6 +46,21 @@ func NewRowingService() *gatt.Service {
 			rsp.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x80, 0x0})
 		})
 
+	rowingGenStatusChar.HandleNotifyFunc(
+		func(r gatt.Request, n gatt.Notifier) {
+			logrus.Info("General Status Char Notify Request - launching goroutine")
+			go func() {
+				for true {
+					logrus.Info("Sending General Status Char Notification from goroutine")
+					byteArray := make([]byte, 1)
+					rand.Read(byteArray)		
+					// 19 bytes		
+					n.Write([]byte{byteArray[0], 0x5, 0x5, 0x5, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x5, 0x5, 0x5, 0x5})
+					time.Sleep(500 * time.Millisecond)
+				}
+			}()
+		})	
+
 	rowingGenStatusChar.AddDescriptor(attrGeneralStatusDescriptorUUID).SetValue([]byte{})
 
 	/*
@@ -67,8 +84,16 @@ func NewRowingService() *gatt.Service {
 	})
 
 	additionalStatus2Char.HandleNotifyFunc(func(r gatt.Request, n gatt.Notifier) {
-		logrus.Info("Additional Status 2 Char Notify Request")
-		n.Write([]byte{0x0, 0x1, 0x2, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+		logrus.Info("Additional Status 2 Char Notify Request - launching goroutine")
+		go func() {
+			for true {
+				logrus.Info("Sending Additional Status 2 Notification from goroutine")
+				byteArray := make([]byte, 1)
+				rand.Read(byteArray)				
+				n.Write([]byte{byteArray[0], 0x1, 0x2, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+				time.Sleep(500 * time.Millisecond)
+			}
+		}()	
 	})
 
 	additionalStatus2Char.AddDescriptor(attrGeneralStatusDescriptorUUID).SetValue([]byte{})
