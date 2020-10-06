@@ -2,10 +2,10 @@ package service
 
 import (
 	"pm5-emulator/service/mux"
+	"pm5-emulator/engine"
 	"github.com/sirupsen/logrus"
 	"github.com/bettercap/gatt"
 	"time"
-	"crypto/rand"
 )
 
 /*
@@ -51,11 +51,8 @@ func NewRowingService() *gatt.Service {
 			logrus.Info("General Status Char Notify Request - launching goroutine")
 			go func() {
 				for true {
-					logrus.Info("Sending General Status Char Notification from goroutine")
-					byteArray := make([]byte, 1)
-					rand.Read(byteArray)		
 					// 19 bytes		
-					n.Write([]byte{byteArray[0], 0x5, 0x5, 0x5, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x5, 0x5, 0x5, 0x5})
+					n.Write([]byte{0x05, 0x5, 0x5, 0x5, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x5, 0x5, 0x5, 0x5})										
 					time.Sleep(500 * time.Millisecond)
 				}
 			}()
@@ -80,17 +77,14 @@ func NewRowingService() *gatt.Service {
 	additionalStatus2Char := s.AddCharacteristic(attrAdditionalStatus2CharacteristicsUUID)
 	additionalStatus2Char.HandleReadFunc(func(rsp gatt.ResponseWriter, req *gatt.ReadRequest) {
 		logrus.Info("Additional Status 2 Char Read Request")
-		rsp.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+		rsp.Write(engine.GenerateAdditionalStatus2Char())	
 	})
 
 	additionalStatus2Char.HandleNotifyFunc(func(r gatt.Request, n gatt.Notifier) {
 		logrus.Info("Additional Status 2 Char Notify Request - launching goroutine")
 		go func() {
 			for true {
-				logrus.Info("Sending Additional Status 2 Notification from goroutine")
-				byteArray := make([]byte, 1)
-				rand.Read(byteArray)				
-				n.Write([]byte{byteArray[0], 0x1, 0x2, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+				n.Write(engine.GenerateAdditionalStatus2Char())
 				time.Sleep(500 * time.Millisecond)
 			}
 		}()	
