@@ -33,6 +33,8 @@ var (
 //NewRowingService advertises rowing service defined by PM5 device
 func NewRowingService() *gatt.Service {
 	s := gatt.NewService(attrRowingServiceUUID)
+	
+	rowingEngine := engine.NewRowingEngine()
 
 	/*
 		C2 rowing general status characteristic
@@ -41,11 +43,10 @@ func NewRowingService() *gatt.Service {
 
 	rowingGenStatusChar.HandleNotifyFunc(
 		func(r gatt.Request, n gatt.Notifier) {
-			logrus.Info("General Status Char Notify Request - launching goroutine")
+			logrus.Info("General Status Char Notify Request")
 			go func() {
 				for true {
-					// 19 bytes		
-					n.Write([]byte{0x05, 0x5, 0x5, 0x5, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x5, 0x5, 0x5, 0x5})										
+					n.Write(rowingEngine.GenerateGeneralStatusChar())										
 					time.Sleep(500 * time.Millisecond)
 				}
 			}()
@@ -60,10 +61,10 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Sending Additional Status 1 Notification from goroutine")				
-				n.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xb8, 0xb, 0x0, 0x0, 0x0})
+				n.Write(rowingEngine.GenerateAdditionalStatus1Char())										
 				time.Sleep(500 * time.Millisecond)
 			}
-		}()	
+		}()
 	})
 
 	/*
@@ -74,7 +75,7 @@ func NewRowingService() *gatt.Service {
 		logrus.Info("Additional Status 2 Char Notify Request - launching goroutine")
 		go func() {
 			for true {
-				n.Write(engine.GenerateAdditionalStatus2Char())
+				n.Write(rowingEngine.GenerateAdditionalStatus2Char())
 				time.Sleep(500 * time.Millisecond)
 			}
 		}()	
