@@ -34,6 +34,8 @@ var (
 //NewRowingService advertises rowing service defined by PM5 device
 func NewRowingService() *gatt.Service {
 	s := gatt.NewService(attrRowingServiceUUID)
+	
+	rowingEngine := engine.NewRowingEngine()
 
 	/*
 		C2 rowing general status characteristic
@@ -42,17 +44,15 @@ func NewRowingService() *gatt.Service {
 	rowingGenStatusChar.HandleReadFunc(
 		func(rsp gatt.ResponseWriter, req *gatt.ReadRequest) {
 			logrus.Info("General Status Char Read Request")
-			//19 bytes
-			rsp.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x80, 0x0})
+			rsp.Write(rowingEngine.GenerateGeneralStatusChar())
 		})
 
 	rowingGenStatusChar.HandleNotifyFunc(
 		func(r gatt.Request, n gatt.Notifier) {
-			logrus.Info("General Status Char Notify Request - launching goroutine")
+			logrus.Info("General Status Char Notify Request")
 			go func() {
 				for true {
-					// 19 bytes		
-					n.Write([]byte{0x05, 0x5, 0x5, 0x5, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x5, 0x5, 0x5, 0x5})										
+					n.Write(rowingEngine.GenerateGeneralStatusChar())										
 					time.Sleep(500 * time.Millisecond)
 				}
 			}()
@@ -66,7 +66,18 @@ func NewRowingService() *gatt.Service {
 	additionalStatus1Char := s.AddCharacteristic(attrAdditionalStatus1CharacteristicsUUID)
 	additionalStatus1Char.HandleReadFunc(func(rsp gatt.ResponseWriter, req *gatt.ReadRequest) {
 		logrus.Info("Additional Status 1 Char Read Request")
-		rsp.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xb8, 0xb, 0x0, 0x0, 0x0})
+		rsp.Write(rowingEngine.GenerateAdditionalStatus1Char())
+	})
+	
+	additionalStatus1Char.HandleNotifyFunc(
+	func(r gatt.Request, n gatt.Notifier) {
+		logrus.Info("Additional Status 1 Char Notify Request")
+		go func() {
+			for true {
+				n.Write(rowingEngine.GenerateAdditionalStatus1Char())										
+				time.Sleep(500 * time.Millisecond)
+			}
+		}()
 	})
 
 	additionalStatus1Char.AddDescriptor(attrGeneralStatusDescriptorUUID).SetValue([]byte{})
@@ -77,14 +88,14 @@ func NewRowingService() *gatt.Service {
 	additionalStatus2Char := s.AddCharacteristic(attrAdditionalStatus2CharacteristicsUUID)
 	additionalStatus2Char.HandleReadFunc(func(rsp gatt.ResponseWriter, req *gatt.ReadRequest) {
 		logrus.Info("Additional Status 2 Char Read Request")
-		rsp.Write(engine.GenerateAdditionalStatus2Char())	
+		rsp.Write(rowingEngine.GenerateAdditionalStatus2Char())	
 	})
 
 	additionalStatus2Char.HandleNotifyFunc(func(r gatt.Request, n gatt.Notifier) {
-		logrus.Info("Additional Status 2 Char Notify Request - launching goroutine")
+		logrus.Info("Additional Status 2 Char Notify Request")
 		go func() {
 			for true {
-				n.Write(engine.GenerateAdditionalStatus2Char())
+				n.Write(rowingEngine.GenerateAdditionalStatus2Char())
 				time.Sleep(500 * time.Millisecond)
 			}
 		}()	
