@@ -167,6 +167,16 @@ func NewRowingService() *gatt.Service {
 		rsp.Write(data)
 	})
 
+	endOfWorkoutSummaryDataChar.HandleNotifyFunc(func(r gatt.Request, n gatt.Notifier) {
+		logrus.Info("Workout Summary Char Notify Request")
+		go func() {
+			for true {
+				n.Write(rowingEngine.GenerateWorkoutSummaryChar())
+				time.Sleep(500 * time.Millisecond)
+			}
+		}()	
+	})
+
 	endOfWorkoutSummaryDataChar.AddDescriptor(attrGeneralStatusDescriptorUUID).SetValue([]byte{})
 	/*
 		C2 rowing end of workout additional summary data characteristic
@@ -176,6 +186,16 @@ func NewRowingService() *gatt.Service {
 		logrus.Info("Additional End of workout summary Data char Read Request")
 		data := make([]byte, 19)
 		rsp.Write(data)
+	})
+
+	additionalEndOfWorkoutSummaryDataChar.HandleNotifyFunc(func(r gatt.Request, n gatt.Notifier) {
+		logrus.Info("Workout Summary Char 2 Notify Request")
+		go func() {
+			for true {
+				n.Write(rowingEngine.GenerateWorkoutSummaryChar2())
+				time.Sleep(500 * time.Millisecond)
+			}
+		}()	
 	})
 
 	additionalEndOfWorkoutSummaryDataChar.AddDescriptor(attrGeneralStatusDescriptorUUID).SetValue([]byte{})

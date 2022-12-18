@@ -173,3 +173,25 @@ func (eng rowingEngine) GenerateAdditionalStatus2Char() []byte {
 	
 	return bytes
 }
+
+
+func (eng rowingEngine) GenerateWorkoutSummaryChar() []byte {
+	bytes := make([]byte, 20, 20)
+	
+	copy(bytes[0:], []byte{59, 45, 29, 13})
+	copy(bytes[7:], eng.generateDistanceBytes())
+	copy(bytes[10:], eng.generateStrokeRateBytes())
+	
+	return bytes
+}
+
+func (eng rowingEngine) GenerateWorkoutSummaryChar2() []byte {
+	bytes := make([]byte, 19, 19)
+	
+	copy(bytes[0:], []byte{59, 45, 29, 13})
+	// copy(bytes[7:], eng.generateDistanceBytes())
+	// copy(bytes[10:], eng.generateStrokeRateBytes())
+	
+	return bytes
+}
+
