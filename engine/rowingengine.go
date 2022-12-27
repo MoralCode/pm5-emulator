@@ -12,12 +12,20 @@ const (
 	TWO_MINUTE_SPLIT_SPEED = 4.16  // as meters per second
 )
 
+const (
+	second		Size = 0
+	half		Size = 1
+	quarter		Size = 2
+	tenth		Size = 3
+)
+
 type rowingEngine struct {
 	startTime time.Time
+	statusRate uint8
 }
 
 func NewRowingEngine() rowingEngine {
-	return rowingEngine{time.Now()}
+	return rowingEngine{time.Now(), half}
 }
 
 /*-------- Private Methods ---------*/
@@ -78,6 +86,27 @@ func (eng rowingEngine) generateStrokeRateBytes() []byte {
 }
 
 /*-------- Public Methods ---------*/
+
+/*
+	returns a number of milliseconds to wait between each status packet
+	in order to abide by the configured statusRate value. 
+	This corresponds to the possible values of characteristic 0x0034 from the
+	concept2 bluetooth specification
+	0 – 1 sec
+	1 - 500ms (default if characteristic is not explicitly set by the
+	app)
+	2 – 250ms
+	3 – 100ms
+*/
+func (eng rowingEngine) GetStatusDelay() []byte {
+	switch eng.statusRate {
+		case 0: return 1000
+		case 1: return 500
+		case 2: return 250
+		case 3: return 100
+		default: 500
+	}
+}
 
 /*
 	Generates a 'General Status' characteristic of 19 bytes.
