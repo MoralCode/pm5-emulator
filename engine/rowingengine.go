@@ -108,6 +108,8 @@ func (eng rowingEngine) GetStatusDelay() []byte {
 	}
 }
 
+//TODO: add a method to allow the statusDelay to be set from a bluetooth characteristic
+
 /*
 	Generates a 'General Status' characteristic of 19 bytes.
 	Only the bytes labeled with a * are populated with non-zero values:
