@@ -108,7 +108,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Stroke Data Notification from goroutine")
-				n.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+				n.Write(engine.GenerateStrokeDataChar())
 				time.Sleep(1000 * time.Millisecond)
 			}
 		}()	
@@ -122,8 +122,8 @@ func NewRowingService() *gatt.Service {
 		logrus.Info("Additional Stroke Data Char Notify Request - launching goroutine")
 		go func() {
 			for true {
-				logrus.Info("Stroke Data Notification from goroutine")
-				n.Write([]byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xff})
+				logrus.Info("Additional Stroke Data Notification from goroutine")
+				n.Write(engine.GenerateStrokeData2Char())
 				time.Sleep(1000 * time.Millisecond)
 			}
 		}()	
@@ -138,7 +138,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Split/Interval Data Notification from goroutine")
-				n.Write(make([]byte, 18))
+				n.Write(engine.GenerateSplitIntervalChar())
 				time.Sleep(50000 * time.Millisecond)
 			}
 		}()	
@@ -154,7 +154,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Additional Split/Interval Data Notification from goroutine")
-				n.Write(make([]byte, 18))
+				n.Write(engine.GenerateSplitInterval2Char())
 				time.Sleep(50000 * time.Millisecond)
 			}
 		}()	
@@ -170,7 +170,7 @@ func NewRowingService() *gatt.Service {
 			for true {
 				time.Sleep(200000 * time.Millisecond)
 				logrus.Info("End of workout summary Data Notification from goroutine")
-				n.Write(make([]byte, 20))
+				n.Write(engine.GenerateWorkoutSummaryChar())
 			}
 		}()	
 	})
@@ -185,7 +185,7 @@ func NewRowingService() *gatt.Service {
 			for true {
 				time.Sleep(200000 * time.Millisecond)
 				logrus.Info("End of workout Additional summary Data Notification from goroutine")
-				n.Write(make([]byte, 20))
+				n.Write(engine.GenerateWorkoutSummary2Char())
 			}
 		}()	
 	})
@@ -216,7 +216,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Force Curve Data Notification from goroutine")
-				n.Write([]byte{0b000101001, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+				n.Write(engine.GenerateForceCurveChar())
 				time.Sleep(1000 * time.Millisecond)
 			}
 		}()	

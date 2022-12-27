@@ -204,3 +204,213 @@ func (eng rowingEngine) GenerateAdditionalStatus2Char() []byte {
 	
 	return bytes
 }
+
+/*
+	Generates a 'Stroke Data' characteristic of 20 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - Elapsed Time Lo (0.01 sec lsb), *
+		1 - Elapsed Time Mid, *
+		2 - Elapsed Time High, *
+		3 - Distance Lo (0.1 m lsb),
+		4 - Distance Mid,
+		5 - Distance High,
+		6 - Drive Length (0.01 meters, max = 2.55m),
+		7 - Drive Time (0.01 sec, max = 2.55 sec),
+		8 - Stroke Recovery Time Lo (0.01 sec, max = 655.35 sec),
+		9 - Stroke Recovery Time Hi
+		10 - Stroke Distance Lo (0.01 m, max=655.35m)
+		11 - Stroke Distance Hi,
+		12 - Peak Drive Force Lo (0.1 lbs of force, max=6553.5m)
+		13 - Peak Drive Force Hi,
+		14 - Average Drive Force Lo (0.1 lbs of force, max=6553.5m),
+		15 - Average Drive Force Hi,
+		16 - Work Per Stroke Lo (0.1 Joules, max=6553.5 Joules),
+		17 - Work Per Stroke Hi
+		18 - Stroke Count Lo,
+		19 - Stroke Count Hi,
+*/
+func (eng rowingEngine) GenerateStrokeDataChar() []byte {
+	bytes := make([]byte, 20, 20)
+
+	copy(bytes[0:], eng.generateElapsedTimeBytes())
+	// copy(bytes[8:], eng.generateSplitBytes())
+	
+	return bytes
+}
+
+/*
+	Generates a 'Stroke Data 2' characteristic of 15 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - Elapsed Time Lo (0.01 sec lsb), *
+		1 - Elapsed Time Mid, *
+		2 - Elapsed Time High, *
+		3 - Stroke Power Lo (watts),
+		4 - Stroke Power Hi,
+		5 - Stroke Calories Lo (cal/hr),
+		6 - Stroke Calories Hi,
+		7 - Stroke Count Lo, 
+		8 - Stroke Count Hi,
+		9 - Projected Work Time Lo (secs),
+		10 - Projected Work Time Mid,
+		11 - Projected Work Time Hi,
+		12 - Projected Work Distance Lo (meters),
+		13 - Projected Work Distance Mid,
+		14 - Projected Work Distance Hi		
+*/
+func (eng rowingEngine) GenerateStrokeData2Char() []byte {
+	bytes := make([]byte, 15, 15)
+
+	copy(bytes[0:], eng.generateElapsedTimeBytes())
+	return bytes
+}
+
+/*
+	Generates a 'Split/Interval' characteristic of 18 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - Elapsed Time Lo (0.01 sec lsb), *
+		1 - Elapsed Time Mid, *
+		2 - Elapsed Time High, *
+		3 - Distance Lo (0.1 m lsb),
+		4 - Distance Mid,
+		5 - Distance High,
+		6 - Split/Interval Time Lo (0.1 sec lsb),
+		7 - Split/Interval Time Mid,
+		8 - Split/Interval Time High,
+		9 - Split/Interval Distance Lo ( 1m lsb),
+		10 - Split/Interval Distance Mid,
+		11 - Split/Interval Distance High,
+		12 - Interval Rest Time Lo (1 sec lsb),
+		13 - Interval Rest Time Hi,
+		14 - Interval Rest Distance Lo (1m lsb),
+		15 - Interval Rest Distance Hi
+		16 - Split/Interval Type10,
+		17 - Split/Interval Number,	
+*/
+func (eng rowingEngine) GenerateSplitIntervalChar() []byte {
+	bytes := make([]byte, 18, 18)
+
+	copy(bytes[0:], eng.generateElapsedTimeBytes())
+	return bytes
+}
+
+/*
+	Generates a 'Split/Interval 2' characteristic of 19 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - Elapsed Time Lo (0.01 sec lsb), *
+		1 - Elapsed Time Mid,*
+		2 - Elapsed Time High,*
+		3 - Split/Interval Avg Stroke Rate,
+		4 - Split/Interval Work Heartrate,
+		5 - Split/Interval Rest Heartrate,
+		6 - Split/Interval Avg Pace Lo (0.1 sec lsb)
+		7 - Split/Interval Avg Pace Hi,
+		8 - Split/Interval Total Calories Lo (Cals),
+		9 - Split/Interval Total Calories Hi,
+		10 - Split/Interval Avg Calories Lo (Cals/Hr),
+		11 - Split/Interval Avg Calories Hi,
+		12 - Split/Interval Speed Lo (0.001 m/s, max=65.534 m/s)
+		13 - Split/Interval Speed Hi,
+		14 - Split/Interval Power Lo (Watts, max = 65.534 kW)
+		15 - Split/Interval Power Hi
+		16 - Split Avg Drag Factor,
+		17 - Split/Interval Number,
+		18 - Erg Machine Type
+*/
+func (eng rowingEngine) GenerateSplitInterval2Char() []byte {
+	bytes := make([]byte, 19, 19)
+
+	copy(bytes[0:], eng.generateElapsedTimeBytes())
+	return bytes
+}
+
+/*
+	Generates a 'End of workout summary' characteristic of 20 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - Log Entry Date Lo,
+		1 - Log Entry Date Hi,
+		2 - Log Entry Time Lo,
+		3 - Log Entry Time Hi,
+		4 - Elapsed Time Lo (0.01 sec lsb),
+		5 - Elapsed Time Mid,
+		6 - Elapsed Time High,
+		7 - Distance Lo (0.1 m lsb),
+		8 - Distance Mid,
+		9 - Distance High,
+		10 - Average Stroke Rate,
+		11 - Ending Heartrate,
+		12 - Average Heartrate,
+		13 - Min Heartrate,
+		14 - Max Heartrate,
+		15 - Drag Factor Average,
+		16 - Recovery Heart Rate, (zero = not valid data. After 1 minute of rest/recovery, PM5 resends this data unless the monitor has been turned off or a new workout started)
+		17 - Workout Type,
+		18 - Avg Pace Lo (0.1 sec lsb)
+		19 - Avg Pace Hi
+*/
+func (eng rowingEngine) GenerateWorkoutSummaryChar() []byte {
+	bytes := make([]byte, 20, 20)
+
+	return bytes
+}
+
+
+/*
+	Generates a 'End of workout summary 2' characteristic of 19 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - Log Entry Date Lo,
+		1 - Log Entry Date Hi,
+		2 - Log Entry Time Lo,
+		3 - Log Entry Time Hi,
+		4 - Split/Interval Type12,
+		5 - Split/Interval Size Lo, (meters or seconds)
+		6 - Split/Interval Size Hi,
+		7 - Split/Interval Count,
+		8 - Total Calories Lo,
+		9 - Total Calories Hi,
+		10 - Watts Lo,
+		11 - Watts Hi,
+		12 - Total Rest Distance Lo (1 m lsb),
+		13 - Total Rest Distance Mid,
+		14 - Total Rest Distance High
+		15 - Interval Rest Time Lo (seconds),
+		16 - Interval Rest Time Hi,
+		17 - Avg Calories Lo, (cals/hr)
+		18 - Avg Calories Hi,
+*/
+func (eng rowingEngine) GenerateWorkoutSummary2Char() []byte {
+	bytes := make([]byte, 19, 19)
+
+	return bytes
+}
+
+
+/*
+	Generates a 'Force curve data' characteristic of 2-288 bytes.
+	Only the bytes labeled with a * are populated with non-zero values:
+		0 - MS Nib = # characteristics, LS Nib = # words *
+		1 - Sequence number, *
+		2 - Data[n] (LS),
+		3 - Data[n+1] (MS),
+		4 - Data[n+2] (LS),
+		5 - Data[n+3] (MS),
+		6 - Data[n+4] (LS),
+		7 - Data[n+5] (MS),
+		8 - Data[n+6] (LS),
+		9 - Data[n+7] (MS),
+		10 - Data[n+8] (LS),
+		11 - Data[n+9] (MS),
+		12 - Data[n+10] (LS),
+		13 - Data[n+11] (MS),
+		14 - Data[n+12] (LS),
+		15 - Data[n+13] (MS),
+		16 - Data[n+14] (LS),
+		17 - Data[n+15] (MS),
+		18 - Data[n+16] (LS),
+		19 - Data[n+17] (MS)
+*/
+func (eng rowingEngine) GenerateForceCurveChar() []byte {
+	bytes := make([]byte, 20, 20)
+	bytes[0:] = 0b00011001
+	bytes[1:] = 1
+	return bytes
+}
