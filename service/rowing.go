@@ -108,7 +108,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Stroke Data Notification from goroutine")
-				n.Write(engine.GenerateStrokeDataChar())
+				n.Write(rowingEngine.GenerateStrokeDataChar())
 				time.Sleep(1000 * time.Millisecond)
 			}
 		}()	
@@ -123,7 +123,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Additional Stroke Data Notification from goroutine")
-				n.Write(engine.GenerateStrokeData2Char())
+				n.Write(rowingEngine.GenerateStrokeData2Char())
 				time.Sleep(1000 * time.Millisecond)
 			}
 		}()	
@@ -138,7 +138,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Split/Interval Data Notification from goroutine")
-				n.Write(engine.GenerateSplitIntervalChar())
+				n.Write(rowingEngine.GenerateSplitIntervalChar())
 				time.Sleep(50000 * time.Millisecond)
 			}
 		}()	
@@ -154,7 +154,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Additional Split/Interval Data Notification from goroutine")
-				n.Write(engine.GenerateSplitInterval2Char())
+				n.Write(rowingEngine.GenerateSplitInterval2Char())
 				time.Sleep(50000 * time.Millisecond)
 			}
 		}()	
@@ -170,7 +170,7 @@ func NewRowingService() *gatt.Service {
 			for true {
 				time.Sleep(200000 * time.Millisecond)
 				logrus.Info("End of workout summary Data Notification from goroutine")
-				n.Write(engine.GenerateWorkoutSummaryChar())
+				n.Write(rowingEngine.GenerateWorkoutSummaryChar())
 			}
 		}()	
 	})
@@ -185,7 +185,7 @@ func NewRowingService() *gatt.Service {
 			for true {
 				time.Sleep(200000 * time.Millisecond)
 				logrus.Info("End of workout Additional summary Data Notification from goroutine")
-				n.Write(engine.GenerateWorkoutSummary2Char())
+				n.Write(rowingEngine.GenerateWorkoutSummary2Char())
 			}
 		}()	
 	})
@@ -216,7 +216,7 @@ func NewRowingService() *gatt.Service {
 		go func() {
 			for true {
 				logrus.Info("Force Curve Data Notification from goroutine")
-				n.Write(engine.GenerateForceCurveChar())
+				n.Write(rowingEngine.GenerateForceCurveChar())
 				time.Sleep(1000 * time.Millisecond)
 			}
 		}()	

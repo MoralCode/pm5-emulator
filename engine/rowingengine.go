@@ -13,10 +13,10 @@ const (
 )
 
 const (
-	second		Size = 0
-	half		Size = 1
-	quarter		Size = 2
-	tenth		Size = 3
+	second		uint8 = 0
+	half		uint8 = 1
+	quarter		uint8 = 2
+	tenth		uint8 = 3
 )
 
 type rowingEngine struct {
@@ -98,13 +98,13 @@ func (eng rowingEngine) generateStrokeRateBytes() []byte {
 	2 – 250ms
 	3 – 100ms
 */
-func (eng rowingEngine) GetStatusDelay() []byte {
+func (eng rowingEngine) GetStatusDelay() int {
 	switch eng.statusRate {
 		case 0: return 1000
 		case 1: return 500
 		case 2: return 250
 		case 3: return 100
-		default: 500
+		default: return 500
 	}
 }
 
@@ -410,7 +410,7 @@ func (eng rowingEngine) GenerateWorkoutSummary2Char() []byte {
 */
 func (eng rowingEngine) GenerateForceCurveChar() []byte {
 	bytes := make([]byte, 20, 20)
-	bytes[0:] = 0b00011001
-	bytes[1:] = 1
+	copy(bytes[0:], []byte{0b00011001})
+	copy(bytes[1:], []byte{1})
 	return bytes
 }
