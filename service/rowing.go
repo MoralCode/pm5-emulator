@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"bufio"
 	"strings"
-
+	"encoding/hex"
 )
 
 /*
@@ -259,11 +259,8 @@ func NewRowingService() *gatt.Service {
 				text := scanner.Text()
 				textsplit := strings.Split(text, ":") 
 				delta := textsplit[0]
-				data := text[1] 
+				data := textsplit[1] 
 				fmt.Println(data)
-				// i := new(big.Int)
-				// i.SetString(data, 16)
-
 				
 				logrus.Info("Multiplexed Data Notification from goroutine")
 				// bytes := 
@@ -273,8 +270,20 @@ func NewRowingService() *gatt.Service {
 					fmt.Println("error parsing duration from string")
 					fmt.Println(err)
 				}
-				time.Sleep(dur)
-				// n.Write(i.Bytes())
+
+				bytes,decodeerr := hex.DecodeString(data)
+				if decodeerr != nil {
+					fmt.Println("error decoding bytes from hex")
+					fmt.Println(decodeerr)
+				}
+
+				if dur.Milliseconds() > 50 {
+					fmt.Println("sleeping for " + delta + " ms")
+					time.Sleep(dur)
+				} else {
+					time.Sleep(50 * time.Millisecond)
+				}
+				n.Write(bytes)
 				
 			}
 
