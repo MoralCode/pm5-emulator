@@ -1,13 +1,18 @@
 package service
 
 import (
-	"pm5-emulator/service/mux"
+	// "pm5-emulator/service/mux"
 	"pm5-emulator/engine"
 	"github.com/sirupsen/logrus"
 	"github.com/bettercap/gatt"
 	"time"
-	"strconv"
-	"math/big"
+	// "strconv"
+	// "math/big"
+	"os"
+	"fmt"
+	"bufio"
+	"strings"
+
 )
 
 /*
@@ -42,7 +47,7 @@ func NewRowingService() *gatt.Service {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer file.Close()         // closes the file after everything is done
+	defer replayFile.Close()         // closes the file after everything is done
 
 	
 	/*
@@ -242,24 +247,32 @@ func NewRowingService() *gatt.Service {
 		logrus.Info("Multiplex Info Char Notify Func")
 		//generate a rowing general status payload here
 		// m:=mux.Multiplexer{}
-		var count = 0
+		// var count = 0
 
 		logrus.Info("Multiplexed Data Char Notify Request - launching goroutine")
 		go func() {
-			scanner := bufio.NewScanner(file)
+			scanner := bufio.NewScanner(replayFile)
 			for scanner.Scan() {
 				text := scanner.Text()
-				delta,data := strings.Split(text, ":")  
-				delta := strconv.ParseInt(delta)
+				textsplit := strings.Split(text, ":") 
+				delta := textsplit[0]
+				data := text[1] 
+				fmt.Println(data)
+				// i := new(big.Int)
+				// i.SetString(data, 16)
+
+				
 				logrus.Info("Multiplexed Data Notification from goroutine")
 				// bytes := 
 				// copy(bytes[0:], count)
-				time.Sleep(delta * time.Millisecond)
-
-				i := new(big.Int)
-				i.SetString(data, 16)
-
-				n.Write(i.Bytes())
+				dur,err := time.ParseDuration(delta+"ms")
+				if err != nil {
+					fmt.Println("error parsing duration from string")
+					fmt.Println(err)
+				}
+				time.Sleep(dur)
+				// n.Write(i.Bytes())
+				
 			}
 
 			if err := scanner.Err(); err != nil {
