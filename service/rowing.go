@@ -6,6 +6,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/bettercap/gatt"
 	"time"
+	"strconv"
+	"math/big"
 )
 
 /*
@@ -36,6 +38,13 @@ func NewRowingService() *gatt.Service {
 	
 	rowingEngine := engine.NewRowingEngine()
 
+	replayFile, err := os.Open("replaylog.erg")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()         // closes the file after everything is done
+
+	
 	/*
 		C2 rowing general status characteristic
 	*/
@@ -232,8 +241,31 @@ func NewRowingService() *gatt.Service {
 	multiplexedInfoChar.HandleNotifyFunc(func(r gatt.Request, n gatt.Notifier) {
 		logrus.Info("Multiplex Info Char Notify Func")
 		//generate a rowing general status payload here
-		m:=mux.Multiplexer{}
-		n.Write(m.HandleC2RowingGeneralStatus([]byte{}))
+		// m:=mux.Multiplexer{}
+		var count = 0
+
+		logrus.Info("Multiplexed Data Char Notify Request - launching goroutine")
+		go func() {
+			scanner := bufio.NewScanner(file)
+			for scanner.Scan() {
+				text := scanner.Text()
+				delta,data := strings.Split(text, ":")  
+				delta := strconv.ParseInt(delta)
+				logrus.Info("Multiplexed Data Notification from goroutine")
+				// bytes := 
+				// copy(bytes[0:], count)
+				time.Sleep(delta * time.Millisecond)
+
+				i := new(big.Int)
+				i.SetString(data, 16)
+
+				n.Write(i.Bytes())
+			}
+
+			if err := scanner.Err(); err != nil {
+				fmt.Println(err)
+			}
+		}()	
 	})
 
 
