@@ -234,7 +234,7 @@ func NewRowingService() *gatt.Service {
 	/*
 		C2 multiplexed information 	characteristic
 
-		0x0080 | Up to 20 bytes | READ Permission
+		0x0080 | Up to 20 bytes | NOTIFY Permission
 	*/
 	multiplexedInfoChar := s.AddCharacteristic(attrMultiplexedInfoCharacteristicsUUID)
 
