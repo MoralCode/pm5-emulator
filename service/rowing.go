@@ -43,11 +43,7 @@ func NewRowingService() *gatt.Service {
 	
 	rowingEngine := engine.NewRowingEngine()
 
-	replayFile, err := os.Open("replaylog.erg")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer replayFile.Close()         // closes the file after everything is done
+	replayFileName := "replaylog.erg"
 
 	
 	/*
@@ -249,6 +245,13 @@ func NewRowingService() *gatt.Service {
 		// m:=mux.Multiplexer{}
 		// var count = 0
 
+		replayFile, err := os.OpenFile(replayFileName, os.O_RDWR, 0644)
+		if err != nil {
+			fmt.Println("file error")
+			fmt.Println(err)
+		}
+
+
 		logrus.Info("Multiplexed Data Char Notify Request - launching goroutine")
 		go func() {
 			scanner := bufio.NewScanner(replayFile)
@@ -278,6 +281,8 @@ func NewRowingService() *gatt.Service {
 			if err := scanner.Err(); err != nil {
 				fmt.Println(err)
 			}
+
+			defer replayFile.Close() 
 		}()	
 	})
 
