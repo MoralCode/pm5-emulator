@@ -8,6 +8,7 @@ import (
 	"time"
 	// "strconv"
 	// "math/big"
+	"strconv"
 	"os"
 	"fmt"
 	"bufio"
@@ -255,8 +256,12 @@ func NewRowingService() *gatt.Service {
 		logrus.Info("Multiplexed Data Char Notify Request - launching goroutine")
 		go func() {
 			scanner := bufio.NewScanner(replayFile)
+			count := 0
 			for scanner.Scan() {
 				text := scanner.Text()
+				
+				fmt.Println("processing line " + strconv.Itoa(count))
+				count += 1
 				textsplit := strings.Split(text, ":") 
 				delta := textsplit[0]
 				data := textsplit[1] 
