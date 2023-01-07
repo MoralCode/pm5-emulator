@@ -282,14 +282,24 @@ func NewRowingService() *gatt.Service {
 					fmt.Println(decodeerr)
 				}
 
-				if dur.Milliseconds() > 50 {
-					fmt.Println("sleeping for " + delta + " ms")
+				if dur.Milliseconds() > 20 {
+					fmt.Println("traditionally sleeping for " + delta + " ms")
 					time.Sleep(dur)
 				} else {
-					time.Sleep(50 * time.Millisecond)
+					fmt.Println("monotonocally spinning for " + delta + " ms")
+
+					start := time.Now()
+					stop := start
+					fmt.Printf("%s\n", start)
+
+					for stop.Sub(start).Milliseconds() < 20 { // Use default of monotonic time
+						stop = time.Now()
+					}
+					fmt.Printf("%s\n", stop)
+					// time.Sleep(20 * time.Millisecond)
 				}
 				n.Write(bytes)
-				
+				time.Sleep(10 * time.Millisecond)
 			}
 
 			if err := scanner.Err(); err != nil {
